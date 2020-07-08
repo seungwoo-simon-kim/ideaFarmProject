@@ -5,7 +5,7 @@ const cors = require("cors");
 const express = require("express");
 const { MongoClient } = require("mongodb");
 
-import dbConnString from "./credentials.js";
+//const dbConnString = require("./credentials.mjs");
 
 let DATABASE_NAME = "local_test";
 
@@ -19,7 +19,7 @@ let Commute;
 module.exports = async (app) => {
   app.set("json spaces", 2);
   app.use("/api", api);
-  let url = dbConnString;
+  let url = "mongodb+srv://ksimon12:x8wWNS19!@cluster0.lpmr9.mongodb.net/local_test?retryWrites=true&w=majority";
   conn = await MongoClient.connect(url, { useUnifiedTopology: true });
   db = conn.db("local_test");
   Users = await db.collection("users");

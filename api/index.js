@@ -1,5 +1,6 @@
 "use strict";
 
+import dbConnString from "./credentials.js";
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
@@ -17,7 +18,7 @@ let Commute;
 module.exports = async (app) => {
   app.set("json spaces", 2);
   app.use("/api", api);
-  let url = "mongodb+srv://ksimon12:x8wWNS19!@cluster0.lpmr9.mongodb.net/local_test?retryWrites=true&w=majority";
+  let url = dbConnString;
   conn = await MongoClient.connect(url, { useUnifiedTopology: true });
   db = conn.db("local_test");
   Users = await db.collection("users");

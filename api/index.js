@@ -1,10 +1,11 @@
 "use strict";
 
-import dbConnString from "./credentials.js";
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");
 const { MongoClient } = require("mongodb");
+
+import dbConnString from "./credentials.js";
 
 let DATABASE_NAME = "local_test";
 

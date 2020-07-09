@@ -91,12 +91,14 @@ api.post("/user/getUserInfo", async (req, res) => {
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
+    console.log(req.body.getWeek);
     /* getting week */
     let [ year, month, date ]  = req.body.date.split('-');
     let yoIl = new Date(req.body.date).getDay() - 1;
     let monday = `${year}-${month}-${date - yoIl}`
     let friday = `${year}-${month}-${date + (4 - yoIl)}`
-
+    console.log(`this is monday: ${monday}`);
+    console.log(`this is friday: ${friday}`);
     let query = {
         companyID: req.body.companyID
     };

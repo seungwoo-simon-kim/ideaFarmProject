@@ -94,7 +94,7 @@ api.post("/user/getUserInfo", async (req, res) => {
 api.post("/commute/getUserDateList", async (req, res) => {
     let query = {
         companyID: req.body.companyID,
-        date: null || req.body.date
+        date: req.body.date
     };
     // if (req.body.date) query.date = req.body.date;
     let list = await Commute.find(

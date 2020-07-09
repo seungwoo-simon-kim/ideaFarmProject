@@ -87,19 +87,20 @@ api.post("/user/getUserInfo", async (req, res) => {
     }
 });
 
-/* Request -> companyID, date
+/* Request -> companyID (optional: date, getWeek)
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
-    /* weekend is an edge case */
+    /* if only companyID is provided, then list all commute times of user */
     let query = { companyID: req.body.companyID };
+    /* if only date is provided, then list commute time of that date */
     if (req.body.date) {
         query.date = req.body.date;
+        /* with getWeek option, list all the commute times of the week of provided date */
         if (req.body.getWeek) {
+            /* weekend is an edge case */
             let [ year, month, date ] = req.body.date.split('-');
             let day = new Date(req.body.date).getDay() - 1;
-            // let monday_date = (date - day <= 9 ? "0" : "") + (date - day);
-            // let friday_date = (date - (- 4) - day <= 9 ? "0" : "") + (date - (- 4) - day);
             let monday = `${year}-${month}-${(date - day <= 9 ? "0" : "") + (date - day)}`
             let friday = `${year}-${month}-${(date - (- 4) - day <= 9 ? "0" : "") + (date - (- 4) - day)}`
             query.date = { $gte: monday, $lte: friday };
@@ -108,10 +109,10 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
+    /* sort in ascending order, earlier -> later */
     list.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
     res.status(200).json( list );
 });
-
 
 /* Request -> companyID, date, hour, min
  * Response -> true

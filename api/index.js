@@ -60,7 +60,6 @@ api.get("/", async (req, res) => {
  * Response -> true or false
  * 유저의 로그인 정보가 맞는지 확인한다 */
 api.post("/login", async (req, res) => {
-    console.log(req.body);
     let user_id = req.body.companyID;
     let user_pw = req.body.password;
     let user = await Users.findOne({ companyID: user_id });
@@ -92,15 +91,24 @@ api.post("/user/getUserInfo", async (req, res) => {
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
+    /* getting week */
+    let [ year, month, date ]  = req.body.date.split('-');
+    let yoIl = new Date(req.body.date).getDay() - 1;
+    let monday = `${year}-${month}-${date - yoIl}`
+    let friday = `${year}-${month}-${date + (4 - yoIl)}`
+
     let query = {
         companyID: req.body.companyID
     };
-    if (req.body.date) query.date = req.body.date;
+    if (req.body.date) {
+        query.date = req.body.getWeek ? { $gte: monday, $lte: friday } : req.body.date;
+    }
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
     res.status(200).json( list );
 });
+
 
 /* Request -> companyID, date, hour, min
  * Response -> true

@@ -93,10 +93,9 @@ api.post("/user/getUserInfo", async (req, res) => {
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
     let query = {
-        companyID: req.body.companyID,
-        date: req.body.date
+        companyID: req.body.companyID
     };
-    // if (req.body.date) query.date = req.body.date;
+    if (req.body.date) query.date = req.body.date;
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();

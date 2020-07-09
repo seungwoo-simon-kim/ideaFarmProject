@@ -94,13 +94,13 @@ api.post("/commute/getUserDateList", async (req, res) => {
     console.log(req.body.getWeek);
     /* getting week */
     let date = new Date(req.body.date);
-    let [ year, month, date ]  = req.body.date.split('-');
+    let [ nyeon, weol, il ]  = req.body.date.split('-');
     let yoIl = new Date(req.body.date).getDay() - 1;
     let monday_date = (date - yoIl <= 9 ? "0" : "") + (date - yoIl);
     let friday_date = (date - (- 4) - yoIL <= 9 ? "0" : "") + (date - (- 4) - yoIl);
-    let monday = `${year}-${month}-${monday_date}`
-    let friday = `${year}-${month}-${friday_date}`
-    console.log(year, month, date, yoIl, monday, friday);
+    let monday = `${nyeon}-${weol}-${monday_date}`
+    let friday = `${nyeon}-${weol}-${friday_date}`
+    console.log(nyeon, weol, il, yoIl, monday, friday);
     console.log(`this is monday: ${monday}`);
     console.log(`this is friday: ${friday}`);
     let query = {

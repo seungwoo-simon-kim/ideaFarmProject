@@ -5,8 +5,6 @@ const cors = require("cors");
 const express = require("express");
 const { MongoClient } = require("mongodb");
 
-//const dbConnString = require("./credentials.mjs");
-
 let DATABASE_NAME = "local_test";
 
 let api = express.Router();
@@ -19,7 +17,7 @@ let Commute;
 module.exports = async (app) => {
   app.set("json spaces", 2);
   app.use("/api", api);
-  let url = "mongodb+srv://ksimon12:x8wWNS19!@cluster0.lpmr9.mongodb.net/local_test?retryWrites=true&w=majority";
+  let url = DB_URL;
   conn = await MongoClient.connect(url, { useUnifiedTopology: true });
   db = conn.db("local_test");
   Users = await db.collection("users");
@@ -90,29 +88,15 @@ api.post("/user/getUserInfo", async (req, res) => {
     }
 });
 
-/* Middleware for using Commute collection
- * Sets companyID, date, currTime, and query */
-// api.use("/commute", async (req, res, next) => {
-//     res.locals.companyID = req.body.companyID;
-//     res.locals.date = req.body.date;
-//     res.locals.currTime = `${req.body.hour}-${req.body.min}`;
-//
-//     let query = {
-//         companyID: req.body.companyID
-//     };
-//     if (req.body.date) query.date = req.body.date;
-//     res.locals.query = query;
-//     next();
-// });
-
 /* Request -> companyID, date
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
     let query = {
-        companyID: req.body.companyID
+        companyID: req.body.companyID,
+        date: null || req.body.date
     };
-    if (req.body.date) query.date = req.body.date;
+    // if (req.body.date) query.date = req.body.date;
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();

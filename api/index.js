@@ -91,27 +91,24 @@ api.post("/user/getUserInfo", async (req, res) => {
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
-    console.log(req.body.getWeek);
-    /* getting week */
-    let date = new Date(req.body.date);
-    let [ nyeon, weol, il ]  = req.body.date.split('-');
-    let yoIl = new Date(req.body.date).getDay() - 1;
-    let monday_date = (il - yoIl <= 9 ? "0" : "") + (il - yoIl);
-    let friday_date = (il - (- 4) - yoIl <= 9 ? "0" : "") + (il - (- 4) - yoIl);
-    let monday = `${nyeon}-${weol}-${monday_date}`
-    let friday = `${nyeon}-${weol}-${friday_date}`
-    console.log(nyeon, weol, il, yoIl, monday, friday);
-    console.log(`this is monday: ${monday}`);
-    console.log(`this is friday: ${friday}`);
-    let query = {
-        companyID: req.body.companyID
-    };
+    /* weekend is an edge case */
+    let query = { companyID: req.body.companyID };
     if (req.body.date) {
-        query.date = req.body.getWeek ? { $gte: monday, $lte: friday } : req.body.date;
+        query.date = req.body.date;
+        if (req.body.getWeek) {
+            let date = new Date(req.body.date);
+            let [ nyeon, weol, il ] = date.split('-');
+            let yoIL = date.getDay() - 1;
+            let monday_date = (il - yoIl <= 9 ? "0" : "") + (il - yoIl);
+            let friday_date = (il - (- 4) - yoIl <= 9 ? "0" : "") + (il - (- 4) - yoIl);
+            let monday = `${nyeon}-${weol}-${monday_date}`
+            let friday = `${nyeon}-${weol}-${friday_date}`
+            query.date = { $gte: monday, $lte: friday };
+        }
     }
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
-    ).map(comm => comm).toArray();
+    ).map(comm => comm).toArray().sort((a, b) => (a.date - b.date))
     res.status(200).json( list );
 });
 

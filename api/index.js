@@ -1,6 +1,6 @@
 "use strict";
 
-import DB_URL from "./credentials.js";
+import { DB_URL } from "./credentials.js";
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const express = require("express");

@@ -107,7 +107,8 @@ api.post("/commute/getUserDateList", async (req, res) => {
     }
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
-    ).map(comm => comm).toArray().sort((a, b) => (a.date - b.date))
+    ).map(comm => comm).toArray();
+    list.sort((a, b) => (a.date - b.date));
     res.status(200).json( list );
 });
 

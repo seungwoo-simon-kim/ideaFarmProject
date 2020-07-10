@@ -100,7 +100,7 @@ api.post("/commute/getUserDateList", async (req, res) => {
         if (req.body.getWeek) {
             let [ year, month, date ] = req.body.date.split('-');
             let day = new Date(req.body.date).getDay() - 1;
-            /* if lookup on Sunday, treat it as start of the week */
+            /* Sunday -> Monday, Saturday -> Friday */
             [date, day] = day < 0 ? [date - (- 1), day + 1] : day == 5 ? [date - 1, day - 1] : [date, day];
             let monday = `${year}-${month}-${(date - day <= 9 ? "0" : "") + (date - day)}`
             let friday = `${year}-${month}-${(date - (- 4) - day <= 9 ? "0" : "") + (date - (- 4) - day)}`

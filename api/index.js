@@ -120,7 +120,10 @@ api.post("/commute/getUserDateList", async (req, res) => {
 api.post("/commute/setOnWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
-        { $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N" } },
+        { $set: {
+            onworkTime: `${req.body.hour}-${req.body.minute}`,
+            offworkTime: !this.offworkTime ? "17-30" : this.offworkTime,
+            holiday_yn: "N" } },
         { upsert: true }
     );
     res.status(200).json({ result: "true" });

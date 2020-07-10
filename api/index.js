@@ -98,9 +98,10 @@ api.post("/commute/getUserDateList", async (req, res) => {
         query.date = req.body.date;
         /* with getWeek option, list all the commute times of the week of provided date */
         if (req.body.getWeek) {
-            /* weekend is an edge case */
             let [ year, month, date ] = req.body.date.split('-');
             let day = new Date(req.body.date).getDay() - 1;
+            /* if lookup on Sunday, treat it as start of the week */
+            day = day < 0 ? 0 : day;
             let monday = `${year}-${month}-${(date - day <= 9 ? "0" : "") + (date - day)}`
             let friday = `${year}-${month}-${(date - (- 4) - day <= 9 ? "0" : "") + (date - (- 4) - day)}`
             query.date = { $gte: monday, $lte: friday };
@@ -109,6 +110,10 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
+    if (!list.length) {
+        res.status(404).json({ error: "유저가 없거나 해당 날짜에 기록이 존재하지 않습니다" });
+        return;
+    };
     /* sort in ascending order, earlier -> later */
     list.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
     res.status(200).json( list );

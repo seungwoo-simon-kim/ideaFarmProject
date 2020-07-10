@@ -26,7 +26,7 @@ module.exports = async (app) => {
 };
 
 api.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
+api.use(bodyParser.urlencoded({
       extended : true
   }));
 api.use(cors());

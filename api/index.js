@@ -122,7 +122,7 @@ api.post("/commute/setOnWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         { $set: {
             onworkTime: `${req.body.hour}-${req.body.minute}`,
-            offworkTime: console.log(this.offworkTime), // !this.offworkTime ? "17-30" : this.offworkTime,
+            offworkTime: { $ifNull: [ "$offworkTime", "17-30" ] },
             holiday_yn: "N" } },
         { upsert: true }
     );

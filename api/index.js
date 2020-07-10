@@ -121,8 +121,8 @@ api.post("/commute/setOnWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
-            $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N" },
-            $setOnInsert: { clockedIn: new Date() }
+            $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N", clockedIn: new Date() },
+            $setOnInsert: { offworkTime: "18-30" }
         },
         { upsert: true }
     );
@@ -136,8 +136,8 @@ api.post("/commute/setOffWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
-            $set: { offworkTime: `${req.body.hour}-${req.body.minute}` },
-            $setOnInsert: { clockedOut: new Date() }
+            $set: { offworkTime: `${req.body.hour}-${req.body.minute}`, clockedOut: new Date() },
+            $setOnInsert: { onworkTime: "08-30" }
         },
         { upsert: true }
     );

@@ -118,14 +118,13 @@ api.post("/commute/getUserDateList", async (req, res) => {
  * Response -> true
  * 유저의 출근 시간 기록 */
 api.post("/commute/setOnWork", async (req, res) => {
-    await Commute.findOneAndUpdate(
-        { companyID: req.body.companyID, date: req.body.date },
-        { $set: {
-            onworkTime: `${req.body.hour}-${req.body.minute}`,
-            offworkTime: "$offworkTime", // $ifNull: [ "$offworkTime", "17-30" ] },
-            holiday_yn: "N" } },
-        { upsert: true }
-    );
+    let doc =
+        await Commute.findOneAndUpdate(
+            { companyID: req.body.companyID, date: req.body.date },
+            { $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N" } },
+            { $setOnInsert: { clockedIn: new Date() } }
+            { upsert: true }
+        );
     res.status(200).json({ result: "true" });
 });
 
@@ -136,6 +135,7 @@ api.post("/commute/setOffWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         { $set: { offworkTime: `${req.body.hour}-${req.body.minute}` } },
+        { $setOnInsert: { clockedOut: new Date() } },
         { upsert: true }
     );
     res.status(200).json({ result: "true" });

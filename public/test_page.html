@@ -11,28 +11,45 @@
     <script type="module" src="test_page.js"></script>
   </head>
   <body>
-    <h1>REST API Tester</h1>
-    <h2>Create User</h2>
-    <form id="createForm">
-      <label>Name: <input name="name" placeholder="홍길동"></label><br>
-      <label>Email: <input name="email" placeholder="hgd@naver.com"></label><br>
-      <label>Employee Number: <input name="numID" placeholder="001112"></label><br>
-      <label>Password: <input name="pw" placeholder="Enter Password"></label><br>
-      <button type="submit" id="createuser">Send</button>
-    </form>
-
-    <h2>Log In</h2>
+    <h1>Endpoints Tester</h1>
+    <h2>/login</h2>
     <form id="loginForm">
-      <label>Employee Number: <input name="numID" placeholder="001112"></label><br>
-      <label>Password: <input name="pw" placeholder="Enter Password"></label><br>
-      <button type="submit" id="login">Send</button>
+      <label>companyID: <input name="companyID" value="0000001"></label><br>
+      <label>password <input name="password" value="test1"></label><br><br>
+      <button type="submit" id="login">LOG IN</button>
     </form>
 
-    <h2>Check In</h2>
-    <form id="timecheck">
-        <input name="numID" placeholder="사번">
-    <button type="submit" id="clockin">출근</button>
-    <button type="submit" id="clockout">퇴근</button>
+    <h2>/user/getUserInfo</h2>
+    <form id="userInfoForm">
+      <label>companyID: <input name="companyID" value="0000001"></label><br><br>
+      <button type="submit" id="getUserInfo">GET INFO</button>
+    </form>
+
+    <h2>/commute/getUserDateList</h2>
+    <form id="userDateForm">
+        <label>companyID: <input name="companyID" value="0000001"></label><br>
+        <label>date: <input name="date" placeholder="option: yyyy-mm-dd"></label><br>
+        <label>getWeek: <input name="getWeek" placeholder="option: true OR false"></label><br><br>
+        <button type="submit" id="getUserDate">GET DATE</button>
+    </form>
+
+    <h2>/commute/setOnWork</h2>
+    <form id="onWork">
+        <label>companyID: <input name="companyID" value="0000001"></label><br>
+        <label>date: <input name="date" value="2020-01-01"></label><br>
+        <label>hour: <input name="hour" value="08"></label><br>
+        <label>minute: <input name="minute" value="30"></label><br><br>
+        <button type="submit" id="clockin">CLOCK IN</button>
+    </form>
+
+    <h2>/commute/setOffWork</h2>
+    <form id="offWork">
+        <label>companyID: <input name="companyID" value="0000001"></label><br>
+        <label>date: <input name="date" value="2020-01-01"></label><br>
+        <label>hour: <input name="hour" value="18"></label><br>
+        <label>minute: <input name="minute" value="00"></label><br><br>
+        <button type="submit" id="clockout">CLOCK OUT</button>
+    </form>
 
   </body>
 </html>

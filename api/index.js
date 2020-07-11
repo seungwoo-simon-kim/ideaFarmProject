@@ -35,26 +35,23 @@ api.use(cors());
 api.get("/", async (req, res) => {
     Users.deleteMany({ });
     Commute.deleteMany({ });
-    for (let i = 0; i < 3; i++) {
-        let test_usr = {
-            companyID: `000000${i}`,
-            nickname: `testusr${i}`,
-            email: `${i}${i}${i}@email.com`,
-            phoneNumber: `010-${i}${i}${i}${i}-0000`,
-            password: `test${i}`
+    let test_usr = {
+        companyID: "0000001",
+        nickname: "testusr1",
+        email: "111@email.com",
+        phoneNumber: "010-1111-0000",
+        password: "test1"
+    }
+    await Users.insertOne( test_usr );
+    for (let j = 2; j < 10; j++) {
+        let test_comm = {
+            companyID: "0000001",
+            date: `2020-07-0${j}`,
+            onworkTime: "08-30",
+            offworkTime: "18-00",
+            holiday_yn: "N"
         }
-        await Users.insertOne( test_usr );
-
-        for (let j = 7; j < 10; j++) {
-            let test_comm = {
-                companyID: `000000${i}`,
-                date: `2020-0${j}-0${j}`,
-                onworkTime: "08-30",
-                offworkTime: "19-20",
-                holiday_yn: (i == 1 ? "Y" : "N")
-            }
-            await Commute.insertOne( test_comm );
-        }
+        await Commute.insertOne( test_comm );
     }
     res.json({ message: "API running..." });
 });

@@ -1,95 +1,90 @@
 import apiRequest from "./api_requests.js";
 
-const onCreate = async (event) => {
-  event.preventDefault();
-  let form = document.querySelector("#createForm");
-  let name = form.name.value;
-  if (!name) {
-      alert("이름을 입력해주세요");
-      return;
-  }
-  let email = form.email.value;
-  if (!email) {
-      alert("이메일을 입력해주세요");
-      return;
-  }
-  let numID = form.numID.value;
-  if (!numID) {
-      alert("사번을 입력해주세요");
-      return;
-  }
-  let pw = form.pw.value;
-  if (!pw) {
-      alert("비밀번호를 입력해주세요");
-      return;
-  }
-  let new_usr = {
-      numID: numID,
-      pw: pw,
-      name: name,
-      email: email
-  };
-  let res = await apiRequest("POST", "/users", new_usr);
-  let json = await res.json();
-  if (res.status != 200) {
-      alert(json.error);
-      return;
-  }
-  alert(`${json.name}님 환영합니다 \n\n 사번: ${json.numID} \n\n 이메일: ${json.email}`);
-};
-
 const onLogin = async (event) => {
     event.preventDefault();
     let form = document.querySelector("#loginForm");
-    let numID = form.numID.value;
-    if (!numID) {
-        alert("사번을 입력해주세요");
-        return;
+    let body = {
+        companyID: form.companyID.value,
+        password: form.password.value
     }
-    let pw = form.pw.value;
-    if (!pw) {
-        alert("비밀번호를 입력해주세요");
-        return;
-    }
-    let res = await apiRequest("GET", `/users/${numID}`);
+
+    let res = await apiRequest("POST", `/login`, body);
     let json = await res.json();
-    if (res.status != 200) {
-        alert(json.error);
-        return;
-    }
-    if (json.pw != pw) {
-        alert(`비밀번호가 일치하지 않습니다`);
-        return;
-    }
-    alert(`로그인 성공!\n\n환영합니다 ${json.name}님!`);
+    console.log(JSON.stringify(json, null, 4));
 }
 
-const onClockIn = async (event) => {
+const onGetUser = async (event) => {
     event.preventDefault();
-    let form = document.querySelector("#timecheck");
-    let numID = form.numID.value;
-    let res = await apiRequest("PATCH", `/users/${numID}`, { event: "clockin" });
+    let form = document.querySelector("#userInfoForm");
+    let body = {
+        companyID: form.companyID.value
+    }
+    let res = await apiRequest("POST", `/user/getUserInfo`, body);
     let json = await res.json();
-    alert(`${json.clockin.year}-${json.clockin.month}-${json.clockin.date} ${json.clockin.day}요일 ${json.clockin.hour}시 ${json.clockin.minute}분에 출근하셨습니다!`);
+    console.log(JSON.stringify(json, null, 4));
 }
 
-const onClockOut = async (event) => {
+const onGetDate = async (event) => {
     event.preventDefault();
-    let form = document.querySelector("#timecheck");
-    let numID = form.numID.value;
-    let res = await apiRequest("PATCH", `/users/${numID}`, { event: "clockout" });
-    let json = await res.json();
-    let duration_hr = Math.floor(json.clockout.total / 60);
-    let duration_min = json.clockout.total % 60;
-    let remaining_hr = Math.floor(json.clockout.wkly_remaining / 60);
-    let remaining_min = json.clockout.wkly_remaining % 60;
-    alert(`${json.clockout.year}-${json.clockout.month}-${json.clockout.date} ${json.clockout.day}요일 ${json.clockout.hour}시 ${json.clockout.minute}분에 퇴근하셨습니다!\n\n오늘 총 근무시간: ${duration_hr}시간 ${duration_min}분\n\n이번 주 남은 시간: ${remaining_hr}시간 ${remaining_min}분`);
+    let form = document.querySelector("#userDateForm");
+    let body = {
+        companyID: form.companyID.value
+    }
+    if (form.date.value) body.date = form.date.value;
+    (form.getWeek.value == "true") ? body.getWeek = true : (form.getWeek.value == "false") ? false : null;
+    let res = await apiRequest("POST", '/commute/getUserDateList', body);
+    let json_arr = await res.json();
+    console.log(JSON.stringify(json_arr, null, 4));
+}
+
+const onSetOn = async (event) => {
+    event.preventDefault();
+    let form = document.querySelector("#onWork");
+
+    let body = {
+        companyID: form.companyID.value,
+        date: form.date.value,
+        hour: form.hour.value,
+        minute: form.minute.value
+    }
+    let { companyID, date } = body;
+    let prev = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let prev_json = await prev.json();
+
+    let patch = await apiRequest("POST", '/commute/setOnWork', body);
+
+    let updated = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let updated_json = await updated.json();
+
+    console.log(`PREVIOUS: \n${JSON.stringify(prev_json, null, 4)} \n\n UPDATED: \n ${JSON.stringify(updated_json, null, 4)} `);
+}
+
+const onSetOff = async (event) => {
+    event.preventDefault();
+    let form = document.querySelector("#offWork");
+    let body = {
+        companyID: form.companyID.value,
+        date: form.date.value,
+        hour: form.hour.value,
+        minute: form.minute.value
+    }
+    let { companyID, date } = body;
+    let prev = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let prev_json = await prev.json();
+
+    let patch = await apiRequest("POST", '/commute/setOffWork', body);
+
+    let updated = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let updated_json = await updated.json();
+
+    console.log(`PREVIOUS: \n${JSON.stringify(prev_json, null, 4)} \n\n UPDATED: \n ${JSON.stringify(updated_json, null, 4)} `);
 }
 
 const main = () => {
-  document.querySelector("#createuser").addEventListener("click", onCreate);
   document.querySelector("#login").addEventListener("click", onLogin);
-  document.querySelector("#clockin").addEventListener("click", onClockIn);
-  document.querySelector("#clockout").addEventListener("click", onClockOut);
+  document.querySelector("#getUserInfo").addEventListener("click", onGetUser);
+  document.querySelector("#getUserDate").addEventListener("click", onGetDate);
+  document.querySelector("#clockin").addEventListener("click", onSetOn);
+  document.querySelector("#clockout").addEventListener("click", onSetOff);
 };
 main();

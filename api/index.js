@@ -56,7 +56,8 @@ api.get("/", async (req, res) => {
         }
         let test_quotes = {
             date: today,
-            quote: "저기압일때 고기 앞으로 가라"
+            quote: "나의 죽음을 알리지 마라",
+            person: "이순신"
         }
         await Commute.insertOne( test_comm );
         await Quotes.insertOne( test_quotes );
@@ -158,12 +159,12 @@ api.post("/commute/setOffWork", async (req, res) => {
 });
 
 /* Request -> date
- * Response -> quote
+ * Response -> quote, person
  * 해당 날짜의 명언 조회 */
 api.post("/etc/getQuotes", async (req, res) => {
     let today_quote = await Quotes.findOne({ date: req.body.date });
-    let { quote } = today_quote;
-    res.status(200).json({ quote });
+    let { quote, person } = today_quote;
+    res.status(200).json({ quote, person });
 });
 
 /* Catch-all route to return a JSON error if endpoint not defined

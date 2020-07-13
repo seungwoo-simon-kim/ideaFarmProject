@@ -37,6 +37,7 @@ api.use(cors());
 api.get("/", async (req, res) => {
     Users.deleteMany({ });
     Commute.deleteMany({ });
+    Quotes.deleteMany({ });
     let test_usr = {
         companyID: "0000001",
         nickname: "testusr1",

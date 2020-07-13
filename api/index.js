@@ -13,6 +13,7 @@ let conn;
 let Users;
 let Commute;
 let Quotes;
+const DAY_MS = 86400000;
 
 /* Connect to MongoDB Atlas */
 module.exports = async (app) => {
@@ -109,13 +110,22 @@ api.post("/commute/getUserDateList", async (req, res) => {
         query.date = req.body.date;
         /* with getWeek option, list all the commute times of the week of provided date */
         if (req.body.getWeek) {
-            let [ year, month, date ] = req.body.date.split('-');
-            let day = new Date(req.body.date).getDay() - 1;
-            /* Sunday -> Monday, Saturday -> Friday */
-            [date, day] = day < 0 ? [date - (- 1), day + 1] : day == 5 ? [date - 1, day - 1] : [date, day];
-            let monday = `${year}-${month}-${(date - day <= 9 ? "0" : "") + (date - day)}`
-            let friday = `${year}-${month}-${(date - (- 4) - day <= 9 ? "0" : "") + (date - (- 4) - day)}`
-            query.date = { $gte: monday, $lte: friday };
+
+            let req_date = new Date(req.body.date);
+
+            let req_day = req_date.getDay();
+            /* Date of beginning of the week, sunday */
+            let start = new Date(req_date - req_day * DAY_MS).toISOString();
+            let [ start_yr, start_mn, start_date ] = start.split('T')[0].split('-');
+
+            /* Date of end of the week, saturday */
+            let end = new Date(req_date - (-DAY_MS * (6 - req_day))).toISOString();
+            let [ end_yr, end_mn, end_date ] = end.split('T')[0].split('-');
+
+            let sunday = `${start_yr}-${start_mn}-${start_date}`;
+            let saturday = `${end_yr}-${end_mn}-${end_date}`;
+
+            query.date = { $gte: sunday, $lte: saturday };
         }
     }
     let list = await Commute.find(

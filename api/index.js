@@ -127,7 +127,7 @@ api.post("/commute/getUserDateList", async (req, res) => {
     };
     /* sort in ascending order, earlier -> later */
     list.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-    res.status(200).json( list );
+    res.status(200).json({ result: list });
 });
 
 /* Request -> companyID, date, hour, min

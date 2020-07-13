@@ -43,7 +43,8 @@ api.get("/", async (req, res) => {
         nickname: "testusr1",
         email: "111@email.com",
         phoneNumber: "010-1111-0000",
-        password: "test1"
+        password: "test1",
+        profileURL: "www.google.com"
     }
     await Users.insertOne( test_usr );
     for (let j = 2; j < 10; j++) {
@@ -84,7 +85,7 @@ api.post("/login", async (req, res) => {
 });
 
 /* Request -> companyID
- * Response -> companyID, nickname, email, phoneNumber
+ * Response -> companyID, nickname, email, phoneNumber, profileURL
  * 유저의 정보를 나열한다 */
 api.post("/user/getUserInfo", async (req, res) => {
     let user_id = req.body.companyID;
@@ -92,8 +93,8 @@ api.post("/user/getUserInfo", async (req, res) => {
     if (!user) {
         res.status(404).json({ result: "false" });
     }  else {
-        let { companyID, nickname, email, phoneNumber } = user;
-        res.status(200).json({ companyID, nickname, email, phoneNumber });
+        let { companyID, nickname, email, phoneNumber, profileURL } = user;
+        res.status(200).json({ companyID, nickname, email, phoneNumber, profileURL });
     }
 });
 

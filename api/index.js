@@ -12,6 +12,7 @@ let db;
 let conn;
 let Users;
 let Commute;
+let Quotes;
 
 /* Connect to MongoDB Atlas */
 module.exports = async (app) => {
@@ -23,6 +24,8 @@ module.exports = async (app) => {
   Users = await db.collection("users");
   await db.createCollection("commute")
   Commute = await db.collection("commute");
+  await db.createCollection("quotes");
+  Quotes = await db.collection("quotes");
 };
 
 api.use(bodyParser.json());
@@ -43,14 +46,20 @@ api.get("/", async (req, res) => {
     }
     await Users.insertOne( test_usr );
     for (let j = 2; j < 10; j++) {
+        let today = `2020-07-0${j}`;
         let test_comm = {
             companyID: "0000001",
-            date: `2020-07-0${j}`,
+            date: today,
             onworkTime: "08-30",
             offworkTime: "18-00",
             holiday_yn: "N"
         }
+        let test_quotes = {
+            date: today,
+            quote: "저기압일때 고기 앞으로 가라"
+        }
         await Commute.insertOne( test_comm );
+        await Quotes.insertOne( test_quotes );
     }
     res.json({ message: "API running..." });
 });
@@ -146,6 +155,15 @@ api.post("/commute/setOffWork", async (req, res) => {
         { upsert: true }
     );
     res.status(200).json({ result: "true" });
+});
+
+/* Request -> date
+ * Response -> quote
+ * 해당 날짜의 명언 조회 */
+api.post("/etc/getQuotes", async (req, res) => {
+    let today_quote = await Quotes.findOne({ date: req.body.date });
+    let { quote } = today_quote;
+    res.status(200).json({ quote });
 });
 
 /* Catch-all route to return a JSON error if endpoint not defined

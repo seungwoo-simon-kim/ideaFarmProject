@@ -80,11 +80,20 @@ const onSetOff = async (event) => {
     console.log(`PREVIOUS: \n${JSON.stringify(prev_json, null, 4)} \n\n UPDATED: \n ${JSON.stringify(updated_json, null, 4)} `);
 }
 
+const onGetQuotes = async (event) => {
+    event.preventDefault();
+    let form = document.querySelector("#getQuotes");
+    let res = await apiRequest("POST", '/etc/getQuotes', { date: form.date.value });
+    let json = await res.json();
+    console.log(JSON.stringify(json, null, 4));
+}
+
 const main = () => {
   document.querySelector("#login").addEventListener("click", onLogin);
   document.querySelector("#getUserInfo").addEventListener("click", onGetUser);
   document.querySelector("#getUserDate").addEventListener("click", onGetDate);
   document.querySelector("#clockin").addEventListener("click", onSetOn);
   document.querySelector("#clockout").addEventListener("click", onSetOff);
+  document.querySelector("#getquotes").addEventListener("click", onGetQuotes);
 };
 main();

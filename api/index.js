@@ -26,10 +26,9 @@ module.exports = async (app) => {
 };
 
 api.use(bodyParser.json());
-api.use(bodyParser.urlencoded({
-      extended : true
-  }));
+api.use(bodyParser.urlencoded({ extended : true }));
 api.use(cors());
+
 
 /* Reset DB for testing purposes. Add 3 users, each with 3 commute times */
 api.get("/", async (req, res) => {
@@ -63,14 +62,14 @@ api.post("/login", async (req, res) => {
     let user_id = req.body.companyID;
     let user_pw = req.body.password;
     let user = await Users.findOne({ companyID: user_id });
-    let stat, response;
+    let response;
     /* if user doesn't exist, status code 404 Not Found */
-    if (!user) [stat, response] = [404, "false"];
+    if (!user) response = "false";
     /* if password doesn't match, status code 401 Unauthorized */
-    else if (user && user.password != user_pw) [stat, response] = [401, "false"];
+    else if (user && user.password != user_pw) response = "false";
     /* otherwise, status code 200 OK */
-    else [stat, response] = [200, "true"];
-    res.status(stat).json({ result: response });
+    else response = "true";
+    res.status(200).json({ result: response });
 });
 
 /* Request -> companyID

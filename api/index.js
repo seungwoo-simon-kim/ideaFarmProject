@@ -111,25 +111,19 @@ api.post("/commute/getUserDateList", async (req, res) => {
         /* with getWeek option, list all the commute times of the week of provided date */
         if (req.body.getWeek) {
             let req_date = new Date(req.body.date);
-            let req_day = req_date.getDay();
             /* Date of beginning of the week, sunday */
-            let start = new Date(req_date - req_day * DAY_MS); // .toISOString();
-            let [ start_yr, start_mn, start_date ] = [start.getFullYear(), start.getMonth() - (- 1), start.getDate()];
-
-            /* Date of end of the week, saturday */
-            let end = new Date(req_date - (-DAY_MS * (6 - req_day))); // .toISOString();
-            let [ end_yr, end_mn, end_date ] = [end.getFullYear(), end.getMonth() - (- 1), end.getDate()];
-
-            let sunday = `${start_yr}-${start_mn}-${start_date}`;
-            let saturday = `${end_yr}-${end_mn}-${end_date}`;
-            query.date = { $gte: sunday, $lte: saturday };
+            let start = new Date(req_date - req_date.getDay() * DAY_MS); // .toISOString();
+            let week_arr = [];
+            for (let i = 0; i < 5; i++) {
+                start.setDate(start.getDate() + 1);
+                week_arr.push(`${start.getFullYear()}-${start.getMonth() - (- 1)}-${start.getDate()}`);
+            }
+            query.date = { $in: week_arr };
         }
     }
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
-    /* sort in ascending order, earlier -> later */
-    list.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
     res.status(200).json({ result: list });
 });
 

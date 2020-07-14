@@ -49,11 +49,11 @@ api.get("/", async (req, res) => {
     }
     await Users.insertOne( test_usr );
     for (let j = 2; j < 10; j++) {
-        let today = `2020-07-0${j}`;
+        let today = `2020-7-${j}`;
         let test_comm = {
             companyID: "0000001",
             date: today,
-            onworkTime: "08-30",
+            onworkTime: "8-30",
             offworkTime: "18-00",
             holiday_yn: "N"
         }
@@ -110,31 +110,24 @@ api.post("/commute/getUserDateList", async (req, res) => {
         query.date = req.body.date;
         /* with getWeek option, list all the commute times of the week of provided date */
         if (req.body.getWeek) {
-
             let req_date = new Date(req.body.date);
-
             let req_day = req_date.getDay();
             /* Date of beginning of the week, sunday */
-            let start = new Date(req_date - req_day * DAY_MS).toISOString();
-            let [ start_yr, start_mn, start_date ] = start.split('T')[0].split('-');
+            let start = new Date(req_date - req_day * DAY_MS); // .toISOString();
+            let [ start_yr, start_mn, start_date ] = [start.getFullYear(), start.getMonth() - (- 1), start.getDate()];
 
             /* Date of end of the week, saturday */
-            let end = new Date(req_date - (-DAY_MS * (6 - req_day))).toISOString();
-            let [ end_yr, end_mn, end_date ] = end.split('T')[0].split('-');
+            let end = new Date(req_date - (-DAY_MS * (6 - req_day))); // .toISOString();
+            let [ end_yr, end_mn, end_date ] = [end.getFullYear(), end.getMonth() - (- 1), end.getDate()];
 
             let sunday = `${start_yr}-${start_mn}-${start_date}`;
             let saturday = `${end_yr}-${end_mn}-${end_date}`;
-
             query.date = { $gte: sunday, $lte: saturday };
         }
     }
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
-    if (!list.length) {
-        res.status(404).json({ error: "유저가 없거나 해당 날짜에 기록이 존재하지 않습니다" });
-        return;
-    };
     /* sort in ascending order, earlier -> later */
     list.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
     res.status(200).json({ result: list });

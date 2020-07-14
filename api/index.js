@@ -113,11 +113,13 @@ api.post("/commute/getUserDateList", async (req, res) => {
             let req_date = new Date(req.body.date);
             /* Date of beginning of the week, sunday */
             let start = new Date(req_date - req_date.getDay() * DAY_MS); // .toISOString();
+            /* dates from monday to friday */
             let week_arr = [];
             for (let i = 0; i < 5; i++) {
                 start.setDate(start.getDate() + 1);
                 week_arr.push(`${start.getFullYear()}-${start.getMonth() - (- 1)}-${start.getDate()}`);
             }
+            /* get all dates within the week array */
             query.date = { $in: week_arr };
         }
     }

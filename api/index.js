@@ -129,7 +129,14 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
-    res.status(200).json({ result: list });
+    let remaining_mins = 2400
+    for (let day_obj of list) {
+        let [ inHour, inMin ] = day_obj.onworkTime.split('-').map(Number);
+        let [ outHour, outMin ] = day_obj.offworkTime.split('-').map(Number);
+        let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
+        remaining_mins -= total_mins;
+    }
+    res.status(200).json({ remaining: remaining_mins, result: list });
 });
 
 /* Request -> companyID, date, hour, min
@@ -179,12 +186,17 @@ api.post("/commute/setHoliday", async (req, res) => {
 });
 
 /* Request -> date
- * Response -> quote, person
+ * Response -> quote, person (empty if no quote defined for that date)
  * 해당 날짜의 명언 조회 */
 api.post("/etc/getQuotes", async (req, res) => {
     let today_quote = await Quotes.findOne({ date: req.body.date });
-    let { quote, person } = today_quote;
-    res.status(200).json({ quote, person });
+    let ret_obj;
+    if (!today_quote) ret_obj = {};
+    else {
+        let { quote, person } = today_quote;
+        ret_obj = { quote, person };
+    }
+    res.status(200).json( ret_obj );
 });
 
 /* Catch-all route to return a JSON error if endpoint not defined

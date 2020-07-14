@@ -88,6 +88,27 @@ const onGetQuotes = async (event) => {
     console.log(JSON.stringify(json, null, 4));
 }
 
+const onSetHoliday = async (event) => {
+    event.preventDefault();
+    let form = document.querySelector("#setHoliday");
+    let body = {
+        companyID: form.companyID.value,
+        date: form.date.value,
+        holiday_yn: form.holiday_yn.value
+    }
+
+    let { companyID, date } = body;
+    let prev = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let prev_json = await prev.json();
+
+    let patch = await apiRequest("POST", '/commute/setHoliday', body);
+
+    let updated = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
+    let updated_json = await updated.json();
+
+    console.log(`PREVIOUS: \n${JSON.stringify(prev_json, null, 4)} \n\n UPDATED: \n ${JSON.stringify(updated_json, null, 4)} `);
+}
+
 const main = () => {
   document.querySelector("#login").addEventListener("click", onLogin);
   document.querySelector("#getUserInfo").addEventListener("click", onGetUser);
@@ -95,5 +116,6 @@ const main = () => {
   document.querySelector("#clockin").addEventListener("click", onSetOn);
   document.querySelector("#clockout").addEventListener("click", onSetOff);
   document.querySelector("#getquotes").addEventListener("click", onGetQuotes);
+  document.querySelector("#setHoliday").addEventListener("click", onSetHoliday);
 };
 main();

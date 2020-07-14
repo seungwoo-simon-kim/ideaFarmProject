@@ -13,7 +13,10 @@ let conn;
 let Users;
 let Commute;
 let Quotes;
+/* ms in a day */
 const DAY_MS = 86400000;
+/* default on work time and off work time */
+const [ DEF_START, DEF_END ] = ['8-30', '18-00'];
 
 /* Connect to MongoDB Atlas */
 module.exports = async (app) => {
@@ -53,8 +56,8 @@ api.get("/", async (req, res) => {
         let test_comm = {
             companyID: "0000001",
             date: today,
-            onworkTime: "8-30",
-            offworkTime: "18-00",
+            onworkTime: DEF_START,
+            offworkTime: DEF_END,
             holiday_yn: "N"
         }
         let test_quotes = {
@@ -137,7 +140,7 @@ api.post("/commute/setOnWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         {
             $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N", clockedIn: new Date() },
-            $setOnInsert: { offworkTime: "18-30" }
+            $setOnInsert: { offworkTime: DEF_END }
         },
         { upsert: true }
     );
@@ -152,7 +155,23 @@ api.post("/commute/setOffWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         {
             $set: { offworkTime: `${req.body.hour}-${req.body.minute}`, clockedOut: new Date() },
-            $setOnInsert: { onworkTime: "08-30" }
+            $setOnInsert: { onworkTime: DEF_START }
+        },
+        { upsert: true }
+    );
+    res.status(200).json({ result: "true" });
+});
+
+
+/* Request -> companyID, date, holiday_yn (Y || N)
+ * Result -> true
+ * 해당 날짜에 유저 휴가 설정 */
+api.post("/commute/setHoliday", async (req, res) => {
+    await Commute.findOneAndUpdate(
+        { companyID: req.body.companyID, date: req.body.date },
+        {
+            $set: { holiday_yn: req.body.holiday_yn },
+            $setOnInsert: { onworkTime: DEF_START, offworkTime: DEF_END}
         },
         { upsert: true }
     );

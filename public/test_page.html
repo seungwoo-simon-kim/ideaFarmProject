@@ -28,16 +28,16 @@
     <h2>/commute/getUserDateList</h2>
     <form id="userDateForm">
         <label>companyID: <input name="companyID" value="0000001"></label><br>
-        <label>date: <input name="date" placeholder="option: yyyy-mm-dd"></label><br>
-        <label>getWeek: <input name="getWeek" placeholder="option: true OR false"></label><br><br>
+        <label>date: <input name="date" placeholder="optional"></label><br>
+        <label>getWeek: <input name="getWeek" placeholder="optional: true"></label><br><br>
         <button type="submit" id="getUserDate">GET DATE</button>
     </form>
 
     <h2>/commute/setOnWork</h2>
     <form id="onWork">
         <label>companyID: <input name="companyID" value="0000001"></label><br>
-        <label>date: <input name="date" value="2020-01-01"></label><br>
-        <label>hour: <input name="hour" value="08"></label><br>
+        <label>date: <input name="date" value="2020-1-1"></label><br>
+        <label>hour: <input name="hour" value="8"></label><br>
         <label>minute: <input name="minute" value="30"></label><br><br>
         <button type="submit" id="clockin">CLOCK IN</button>
     </form>
@@ -45,17 +45,27 @@
     <h2>/commute/setOffWork</h2>
     <form id="offWork">
         <label>companyID: <input name="companyID" value="0000001"></label><br>
-        <label>date: <input name="date" value="2020-01-01"></label><br>
+        <label>date: <input name="date" value="2020-1-1"></label><br>
         <label>hour: <input name="hour" value="18"></label><br>
         <label>minute: <input name="minute" value="00"></label><br><br>
         <button type="submit" id="clockout">CLOCK OUT</button>
     </form>
 
+    <h2>/commute/setHoliday</h2>
+    <form id="setHoliday">
+        <label>companyID: <input name="companyID" value="0000001"></label><br>
+        <label>date: <input name="date" value="2020-7-6"></label><br>
+        <label>holiday: <input name="holiday_yn" value="Y"></label><br>
+        <button type="submit" id="setHoliday">GET QUOTES</button>
+    </form>
+
     <h2>/etc/getQuotes</h2>
     <form id="getQuotes">
-        <label>date: <input name="date" value="2020-07-06"></label><br>
+        <label>date: <input name="date" value="2020-7-6"></label><br>
         <button type="submit" id="getquotes">GET QUOTES</button>
     </form>
+
+
 
   </body>
 </html>

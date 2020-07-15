@@ -14,6 +14,11 @@ let Users;
 let Commute;
 let Quotes;
 let Notice;
+let TODAY;
+let INHOUR;
+let INMIN;
+let OUTHOUR;
+let OUTMIN;
 /* ms in a day */
 const DAY_MS = 86400000;
 /* default on work time and off work time */
@@ -132,16 +137,35 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
-    let remaining_mins = 2400;
-    for (let day_obj of list) {
-        let [ inHour, inMin ] = day_obj.onworkTime.split('-').map(Number);
-        let [ outHour, outMin ] = day_obj.offworkTime.split('-').map(Number);
-        let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
-        remaining_mins -= total_mins;
+    let res_obj = { result: list };
+    /* only get remaining time when getWeek is true */
+    if (req.body.getWeek) {
+        let remaining_mins = 2400;
+        for (let day_obj of list) {
+            let [ inHour, inMin ] = day_obj.onworkTime.split('-').map(Number);
+            let [ outHour, outMin ] = day_obj.offworkTime.split('-').map(Number);
+            let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
+            remaining_mins -= total_mins;
+        }
+        res_obj.remaining = `${Math.floor(remaining_mins / 60)}시간 ${remaining_mins % 60}분`;
     }
-    let remaining_time = `${Math.floor(remaining_mins / 60)}시간 ${remaining_mins % 60}분`
-    res.status(200).json({ remaining: remaining_time, result: list });
+    res.status(200).json( res_obj );
 });
+
+api.use("/commute", async (req, res, next) => {
+    /* reset if new day */
+    if (req.path == "/setOnWork") {
+        [ INHOUR, INMIN ] = [ req.body.hour, req.body.minute ].map(Number);
+        TODAY = req.body.date;
+    }
+    if (req.path == "/setOffWork") {
+        [ OUTHOUR, OUTMIN ] = [req.body.hour, req.body.minute ].map(Number);
+    }
+    let total_mins = (OUTHOUR * 60 + OUTMIN) - (INHOUR * 60 + INMIN) - 90;
+    res.locals.total = `${Math.floor(total_mins / 60)}시간 ${total_mins % 60}분`;
+    next();
+});
+
 
 /* Request -> companyID, date, hour, min
  * Response -> true
@@ -150,7 +174,7 @@ api.post("/commute/setOnWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
-            $set: { onworkTime: `${req.body.hour}-${req.body.minute}`, holiday_yn: "N", clockedIn: new Date() },
+            $set: { onworkTime: `${INHOUR}-${INMIN}`, holiday_yn: "N", clockedIn: new Date(), total: res.locals.total },
             $setOnInsert: { offworkTime: DEF_END }
         },
         { upsert: true }
@@ -165,7 +189,11 @@ api.post("/commute/setOffWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
-            $set: { offworkTime: `${req.body.hour}-${req.body.minute}`, clockedOut: new Date() },
+            $set: {
+                offworkTime: `${OUTHOUR}-${OUTMIN}`,
+                clockedOut: new Date(),
+                total: res.locals.total
+            },
             $setOnInsert: { onworkTime: DEF_START }
         },
         { upsert: true }
@@ -184,6 +212,7 @@ api.post("/commute/setHoliday", async (req, res) => {
     if (req.body.holiday_yn == "Y") {
         body.onworkTime = DEF_START;
         body.offworkTime = DEF_END;
+        body.total = "8시간 0분"
     }
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },

@@ -5,7 +5,7 @@ const cors = require("cors");
 const express = require("express");
 const { MongoClient } = require("mongodb");
 
-let DATABASE_NAME = "local_test";
+const DATABASE_NAME = "local_test";
 
 let api = express.Router();
 let db;
@@ -14,15 +14,11 @@ let Users;
 let Commute;
 let Quotes;
 let Notice;
-let TODAY;
-let INHOUR;
-let INMIN;
-let OUTHOUR;
-let OUTMIN;
+
 /* ms in a day */
 const DAY_MS = 86400000;
 /* default on work time and off work time */
-const [ DEF_START, DEF_END ] = ['8-30', '18-00'];
+const [ DEFAULT_START, DEFAULT_END ] = ['8-30', '18-00'];
 
 /* Connect to MongoDB Atlas */
 module.exports = async (app) => {
@@ -128,17 +124,20 @@ api.post("/commute/getUserDateList", async (req, res) => {
     res.status(200).json( res_obj );
 });
 
-/* Middleware to set global variables to calculate total work time per day */
+/* Middleware to compute total time worked for the day */
 api.use("/commute", async (req, res, next) => {
-    /* reset if new day */
-    if (req.path == "/setOnWork") {
-        [ INHOUR, INMIN ] = [ req.body.hour, req.body.minute ].map(Number);
-        TODAY = req.body.date;
+    let commuteData = await Commute.findOne({ companyID: req.body.companyID, date: req.body.date });
+    let inHr, inMin, outHr, outMin;
+    if (req.path === "/setOnWork") {
+        [ outHr, outMin ] = (commuteData && commuteData.offworkTime ? commuteData.offworkTime : DEFAULT_END).split('-').map(Number);
+        [ inHr, inMin ] = [ req.body.hour, req.body.minute ].map(Number);
     }
-    if (req.path == "/setOffWork") {
-        [ OUTHOUR, OUTMIN ] = [req.body.hour, req.body.minute ].map(Number);
+    else if (req.path === "/setOffWork") {
+        [ inHr, inMin ] = (commuteData && commuteData.onworkTime ? commuteData.onworkTime : DEFAULT_START).split('-').map(Number);
+        [ outHr, outMin ] = [ req.body.hour, req.body.minute ].map(Number);
     }
-    let total_mins = (OUTHOUR * 60 + OUTMIN) - (INHOUR * 60 + INMIN) - 90;
+    else return;
+    let total_mins = (outHr * 60 + outMin) - (inHr * 60 + inMin) - 90;
     res.locals.total = `${Math.floor(total_mins / 60)}시간 ${total_mins % 60}분`;
     next();
 });
@@ -156,7 +155,7 @@ api.post("/commute/setOnWork", async (req, res) => {
                 clockedIn: new Date(),
                 total: res.locals.total
             },
-            $setOnInsert: { offworkTime: DEF_END }
+            $setOnInsert: { offworkTime: DEFAULT_END }
         },
         { upsert: true }
     );
@@ -175,13 +174,12 @@ api.post("/commute/setOffWork", async (req, res) => {
                 clockedOut: new Date(),
                 total: res.locals.total
             },
-            $setOnInsert: { onworkTime: DEF_START }
+            $setOnInsert: { onworkTime: DEFAULT_START }
         },
         { upsert: true }
     );
     res.status(200).json({ result: "true" });
 });
-
 
 /* Request -> companyID, date, holiday_yn (Y || N)
  * Result -> true
@@ -191,8 +189,8 @@ api.post("/commute/setHoliday", async (req, res) => {
         holiday_yn: req.body.holiday_yn
     }
     if (req.body.holiday_yn == "Y") {
-        body.onworkTime = DEF_START;
-        body.offworkTime = DEF_END;
+        body.onworkTime = DEFAULT_START;
+        body.offworkTime = DEFAULT_END;
         body.total = "8시간 0분"
     }
     await Commute.findOneAndUpdate(

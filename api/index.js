@@ -147,8 +147,9 @@ api.post("/commute/setOnWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         {
             $set: {
-                onworkTime: `${INHOUR}-${INMIN}`,
-                holiday_yn: "N", clockedIn: new Date(),
+                onworkTime: `${req.body.hour}-${req.body.minute}`,
+                holiday_yn: "N",
+                clockedIn: new Date(),
                 total: res.locals.total
             },
             $setOnInsert: { offworkTime: DEF_END }
@@ -166,7 +167,7 @@ api.post("/commute/setOffWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         {
             $set: {
-                offworkTime: `${OUTHOUR}-${OUTMIN}`,
+                offworkTime: `${req.body.hour}-${req.body.hour}`,
                 clockedOut: new Date(),
                 total: res.locals.total
             },

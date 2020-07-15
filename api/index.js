@@ -178,12 +178,16 @@ api.post("/commute/setOffWork", async (req, res) => {
  * Result -> true
  * 해당 날짜에 유저 휴가 설정 */
 api.post("/commute/setHoliday", async (req, res) => {
+    let body = {
+        holiday_yn: req.body.holiday_yn
+    }
+    if (req.body.holiday_yn == "Y") {
+        body.onworkTime = DEF_START;
+        body.offworkTime = DEF_END;
+    }
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
-        {
-            $set: { holiday_yn: req.body.holiday_yn },
-            $setOnInsert: { onworkTime: DEF_START, offworkTime: DEF_END}
-        },
+        { $set: body },
         { upsert: true }
     );
     res.status(200).json({ result: "true" });

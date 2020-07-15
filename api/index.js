@@ -47,35 +47,6 @@ api.use(cors());
 
 /* Reset DB for testing purposes. Add 3 users, each with 3 commute times */
 api.get("/", async (req, res) => {
-    // Users.deleteMany({ });
-    // Commute.deleteMany({ });
-    // Quotes.deleteMany({ });
-    // let test_usr = {
-    //     companyID: "0000001",
-    //     nickname: "testusr1",
-    //     email: "111@email.com",
-    //     phoneNumber: "010-1111-0000",
-    //     password: "test1",
-    //     profileURL: "www.google.com"
-    // }
-    // await Users.insertOne( test_usr );
-    // for (let j = 2; j < 10; j++) {
-    //     let today = `2020-7-${j}`;
-    //     let test_comm = {
-    //         companyID: "0000001",
-    //         date: today,
-    //         onworkTime: DEF_START,
-    //         offworkTime: DEF_END,
-    //         holiday_yn: "N"
-    //     }
-    //     let test_quotes = {
-    //         date: today,
-    //         quote: "나의 죽음을 알리지 마라",
-    //         person: "이순신"
-    //     }
-    //     await Commute.insertOne( test_comm );
-    //     await Quotes.insertOne( test_quotes );
-    // }
     res.json({ message: "API running..." });
 });
 
@@ -147,11 +118,12 @@ api.post("/commute/getUserDateList", async (req, res) => {
             let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
             remaining_mins -= total_mins;
         }
-        res_obj.remaining = `${Math.floor(remaining_mins / 60)}시간 ${remaining_mins % 60}분`;
+        res_obj.remaining = `${Math.floor(remaining_mins / 60)}시간 ${Math.abs(remaining_mins % 60)}분`;
     }
     res.status(200).json( res_obj );
 });
 
+/* Middleware to set global variables to calculate total work time per day */
 api.use("/commute", async (req, res, next) => {
     /* reset if new day */
     if (req.path == "/setOnWork") {
@@ -174,7 +146,11 @@ api.post("/commute/setOnWork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
-            $set: { onworkTime: `${INHOUR}-${INMIN}`, holiday_yn: "N", clockedIn: new Date(), total: res.locals.total },
+            $set: {
+                onworkTime: `${INHOUR}-${INMIN}`,
+                holiday_yn: "N", clockedIn: new Date(),
+                total: res.locals.total
+            },
             $setOnInsert: { offworkTime: DEF_END }
         },
         { upsert: true }

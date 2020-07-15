@@ -105,9 +105,14 @@ api.post("/commute/getUserDateList", async (req, res) => {
             query.date = { $in: week_arr };
         }
     }
-    let list = await Commute.find(
-        query, { projection: { _id: 0 } }
-    ).map(comm => comm).toArray();
+    let list = await Commute.find(query, { projection: { _id: 0 } }).map(comm => comm).toArray();
+    list.sort(function(a, b) {
+        let a_date = a.date.split('-');
+        let b_date = b.date.split('-');
+        for (let i = 0; i < 3; i++) {
+            if (a_date[i] !== b_date[i]) return a_date[i] - b_date[i];
+        }  return 0;
+    });
     let res_obj = { result: list };
     /* only get remaining time when getWeek is true */
     if (req.body.getWeek) {
@@ -138,7 +143,6 @@ api.use("/commute", async (req, res, next) => {
     next();
 });
 
-
 /* Request -> companyID, date, hour, min
  * Response -> true
  * 유저의 출근 시간 기록 */
@@ -167,7 +171,7 @@ api.post("/commute/setOffWork", async (req, res) => {
         { companyID: req.body.companyID, date: req.body.date },
         {
             $set: {
-                offworkTime: `${req.body.hour}-${req.body.hour}`,
+                offworkTime: `${req.body.hour}-${req.body.minute}`,
                 clockedOut: new Date(),
                 total: res.locals.total
             },

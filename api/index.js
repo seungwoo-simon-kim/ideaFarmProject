@@ -13,6 +13,7 @@ let conn;
 let Users;
 let Commute;
 let Quotes;
+let Notice;
 /* ms in a day */
 const DAY_MS = 86400000;
 /* default on work time and off work time */
@@ -30,6 +31,8 @@ module.exports = async (app) => {
   Commute = await db.collection("commute");
   await db.createCollection("quotes");
   Quotes = await db.collection("quotes");
+  await db.createCollection("notice");
+  Notice = await db.collection("notice");
 };
 
 api.use(bodyParser.json());
@@ -39,35 +42,35 @@ api.use(cors());
 
 /* Reset DB for testing purposes. Add 3 users, each with 3 commute times */
 api.get("/", async (req, res) => {
-    Users.deleteMany({ });
-    Commute.deleteMany({ });
-    Quotes.deleteMany({ });
-    let test_usr = {
-        companyID: "0000001",
-        nickname: "testusr1",
-        email: "111@email.com",
-        phoneNumber: "010-1111-0000",
-        password: "test1",
-        profileURL: "www.google.com"
-    }
-    await Users.insertOne( test_usr );
-    for (let j = 2; j < 10; j++) {
-        let today = `2020-7-${j}`;
-        let test_comm = {
-            companyID: "0000001",
-            date: today,
-            onworkTime: DEF_START,
-            offworkTime: DEF_END,
-            holiday_yn: "N"
-        }
-        let test_quotes = {
-            date: today,
-            quote: "나의 죽음을 알리지 마라",
-            person: "이순신"
-        }
-        await Commute.insertOne( test_comm );
-        await Quotes.insertOne( test_quotes );
-    }
+    // Users.deleteMany({ });
+    // Commute.deleteMany({ });
+    // Quotes.deleteMany({ });
+    // let test_usr = {
+    //     companyID: "0000001",
+    //     nickname: "testusr1",
+    //     email: "111@email.com",
+    //     phoneNumber: "010-1111-0000",
+    //     password: "test1",
+    //     profileURL: "www.google.com"
+    // }
+    // await Users.insertOne( test_usr );
+    // for (let j = 2; j < 10; j++) {
+    //     let today = `2020-7-${j}`;
+    //     let test_comm = {
+    //         companyID: "0000001",
+    //         date: today,
+    //         onworkTime: DEF_START,
+    //         offworkTime: DEF_END,
+    //         holiday_yn: "N"
+    //     }
+    //     let test_quotes = {
+    //         date: today,
+    //         quote: "나의 죽음을 알리지 마라",
+    //         person: "이순신"
+    //     }
+    //     await Commute.insertOne( test_comm );
+    //     await Quotes.insertOne( test_quotes );
+    // }
     res.json({ message: "API running..." });
 });
 
@@ -129,14 +132,15 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let list = await Commute.find(
         query, { projection: { _id: 0 } }
     ).map(comm => comm).toArray();
-    let remaining_mins = 2400
+    let remaining_mins = 2400;
     for (let day_obj of list) {
         let [ inHour, inMin ] = day_obj.onworkTime.split('-').map(Number);
         let [ outHour, outMin ] = day_obj.offworkTime.split('-').map(Number);
         let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
         remaining_mins -= total_mins;
     }
-    res.status(200).json({ remaining: remaining_mins, result: list });
+    let remaining_time = `${Math.floor(remaining_mins / 60)}시간 ${remaining_mins % 60}분`
+    res.status(200).json({ remaining: remaining_time, result: list });
 });
 
 /* Request -> companyID, date, hour, min
@@ -197,6 +201,14 @@ api.post("/etc/getQuotes", async (req, res) => {
         ret_obj = { quote, person };
     }
     res.status(200).json( ret_obj );
+});
+
+/* Request -> companyID, contents
+ * Response -> true if insert successful, false otherwise
+ * 유저 건의 사항 제출용 */
+api.post("/etc/QnA", async (req, res) => {
+    let inserted = await Notice.insertOne({ companyID: req.body.companyID, contents: req.body.contents, sysDate: new Date() });
+    res.status(200).json({ result: inserted.acknowledged });
 });
 
 /* Catch-all route to return a JSON error if endpoint not defined

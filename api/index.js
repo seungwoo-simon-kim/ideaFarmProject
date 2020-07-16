@@ -136,7 +136,7 @@ api.use("/commute", async (req, res, next) => {
         [ inHr, inMin ] = (commuteData && commuteData.onworkTime ? commuteData.onworkTime : DEFAULT_START).split('-').map(Number);
         [ outHr, outMin ] = [ req.body.hour, req.body.minute ].map(Number);
     }
-    else return;
+    else next();
     let total_mins = (outHr * 60 + outMin) - (inHr * 60 + inMin) - 90;
     res.locals.total = `${Math.floor(total_mins / 60)}시간 ${total_mins % 60}분`;
     next();

@@ -128,11 +128,11 @@ api.post("/commute/getUserDateList", async (req, res) => {
 api.use("/commute", async (req, res, next) => {
     let commuteData = await Commute.findOne({ companyID: req.body.companyID, date: req.body.date });
     let inHr, inMin, outHr, outMin;
-    if (req.path === "/setOnWork") {
+    if (req.path === "/setOnwork") {
         [ outHr, outMin ] = (commuteData && commuteData.offworkTime ? commuteData.offworkTime : DEFAULT_END).split('-').map(Number);
         [ inHr, inMin ] = [ req.body.hour, req.body.minute ].map(Number);
     }
-    else if (req.path === "/setOffWork") {
+    else if (req.path === "/setOffwork") {
         [ inHr, inMin ] = (commuteData && commuteData.onworkTime ? commuteData.onworkTime : DEFAULT_START).split('-').map(Number);
         [ outHr, outMin ] = [ req.body.hour, req.body.minute ].map(Number);
     }
@@ -145,7 +145,7 @@ api.use("/commute", async (req, res, next) => {
 /* Request -> companyID, date, hour, min
  * Response -> true
  * 유저의 출근 시간 기록 */
-api.post("/commute/setOnWork", async (req, res) => {
+api.post("/commute/setOnwork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {
@@ -165,7 +165,7 @@ api.post("/commute/setOnWork", async (req, res) => {
 /* Request -> companyID, date, hour, min
  * Response -> true
  * 유저의 퇴근 시간 기록 */
-api.post("/commute/setOffWork", async (req, res) => {
+api.post("/commute/setOffwork", async (req, res) => {
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },
         {

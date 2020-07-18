@@ -129,15 +129,16 @@ api.use("/commute", async (req, res, next) => {
     let commuteData = await Commute.findOne({ companyID: req.body.companyID, date: req.body.date });
     let inHr, inMin, outHr, outMin;
     if (req.path === "/setOnwork") {
-        [ outHr, outMin ] = (commuteData && commuteData.offworkTime ? commuteData.offworkTime : DEFAULT_END).split('-').map(Number);
         [ inHr, inMin ] = [ req.body.hour, req.body.minute ].map(Number);
+        [ outHr, outMin ] = commuteData && commuteData.offworkTime ? commuteData.offworkTime.split('-').map(Number) : [ inHr, inMin ];
     }
     else if (req.path === "/setOffwork") {
-        [ inHr, inMin ] = (commuteData && commuteData.onworkTime ? commuteData.onworkTime : DEFAULT_START).split('-').map(Number);
         [ outHr, outMin ] = [ req.body.hour, req.body.minute ].map(Number);
+        [ inHr, inMin ] = commuteData && commuteData.onworkTime ? commuteData.onworkTime.split('-').map(Number) : [ outHr, outMin ];
     }
     else return next();
-    let total_mins = (outHr * 60 + outMin) - (inHr * 60 + inMin) - 90;
+    let total_mins = (outHr * 60 + outMin) - (inHr * 60 + inMin);
+    if (total_mins) total_mins -= 90;
     res.locals.total = `${Math.floor(total_mins / 60)}시간 ${total_mins % 60}분`;
     next();
 });
@@ -155,7 +156,7 @@ api.post("/commute/setOnwork", async (req, res) => {
                 clockedIn: new Date(),
                 total: res.locals.total
             },
-            $setOnInsert: { offworkTime: DEFAULT_END }
+            $setOnInsert: { offworkTime: `${req.body.hour}-${req.body.minute}` }
         },
         { upsert: true }
     );
@@ -174,7 +175,7 @@ api.post("/commute/setOffwork", async (req, res) => {
                 clockedOut: new Date(),
                 total: res.locals.total
             },
-            $setOnInsert: { onworkTime: DEFAULT_START }
+            $setOnInsert: { onworkTime: `${req.body.hour}-${req.body.minute}` }
         },
         { upsert: true }
     );

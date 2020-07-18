@@ -51,7 +51,7 @@ const onSetOn = async (event) => {
     let prev = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
     let prev_json = await prev.json();
 
-    let patch = await apiRequest("POST", '/commute/setOnWork', body);
+    let patch = await apiRequest("POST", '/commute/setOnwork', body);
 
     let updated = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
     let updated_json = await updated.json();
@@ -72,7 +72,7 @@ const onSetOff = async (event) => {
     let prev = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
     let prev_json = await prev.json();
 
-    let patch = await apiRequest("POST", '/commute/setOffWork', body);
+    let patch = await apiRequest("POST", '/commute/setOffwork', body);
 
     let updated = await apiRequest("POST", '/commute/getUserDateList', { companyID, date });
     let updated_json = await updated.json();

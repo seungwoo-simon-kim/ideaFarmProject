@@ -18,7 +18,9 @@ let Notice;
 /* ms in a day */
 const DAY_MS = 86400000;
 /* default on work time and off work time */
-const [ DEFAULT_START, DEFAULT_END ] = ['8-30', '18-00'];
+const [ DEFAULT_START, DEFAULT_END, DEFAULT_TIME ] = ['8-30', '18-00', '8시간 0분'];
+
+const WEEKLY_REQ = 2400;
 
 /* Connect to MongoDB Atlas */
 module.exports = async (app) => {
@@ -112,12 +114,12 @@ api.post("/commute/getUserDateList", async (req, res) => {
     let res_obj = { result: list };
     /* only get remaining time when getWeek is true */
     if (req.body.getWeek) {
-        let remaining_mins = 2400;
+        let remaining_mins = WEEKLY_REQ;
         for (let day_obj of list) {
-            let [ inHour, inMin ] = day_obj.onworkTime.split('-').map(Number);
-            let [ outHour, outMin ] = day_obj.offworkTime.split('-').map(Number);
-            let total_mins = (outHour * 60 + outMin) - (inHour * 60 + inMin) - 90;
-            remaining_mins -= total_mins;
+            let [ hr, min ] = day_obj.total.split("시간 ");
+            min = min.split("분")[0];
+            [ hr, min ] = [ hr, min ].map(Number);
+            remaining_mins -= (hr * 60 + min);
         }
         res_obj.remaining = `${Math.floor(remaining_mins / 60)}시간 ${Math.abs(remaining_mins % 60)}분`;
     }
@@ -192,7 +194,7 @@ api.post("/commute/setHoliday", async (req, res) => {
     if (req.body.holiday_yn == "Y") {
         body.onworkTime = DEFAULT_START;
         body.offworkTime = DEFAULT_END;
-        body.total = "8시간 0분"
+        body.total = DEFAULT_TIME;
     }
     await Commute.findOneAndUpdate(
         { companyID: req.body.companyID, date: req.body.date },

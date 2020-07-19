@@ -19,7 +19,7 @@ let Notice;
 const DAY_MS = 86400000;
 /* default on work time and off work time */
 const [ DEFAULT_START, DEFAULT_END, DEFAULT_TIME ] = ['8-30', '18-00', '8시간 0분'];
-
+/* weekly required minutes */
 const WEEKLY_REQ = 2400;
 
 /* Connect to MongoDB Atlas */
@@ -42,7 +42,6 @@ api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({ extended : true }));
 api.use(cors());
 
-
 /* Reset DB for testing purposes. Add 3 users, each with 3 commute times */
 api.get("/", async (req, res) => {
     res.json({ message: "API running..." });
@@ -52,16 +51,10 @@ api.get("/", async (req, res) => {
  * Response -> true or false
  * 유저의 로그인 정보가 맞는지 확인한다 */
 api.post("/login", async (req, res) => {
-    let user_id = req.body.companyID;
-    let user_pw = req.body.password;
+    let [ user_id, user_pw ] = [ req.body.companyID, req.body.password ];
     let user = await Users.findOne({ companyID: user_id });
-    let response;
-    /* if user doesn't exist, status code 404 Not Found */
-    if (!user) response = "false";
-    /* if password doesn't match, status code 401 Unauthorized */
-    else if (user && user.password != user_pw) response = "false";
-    /* otherwise, status code 200 OK */
-    else response = "true";
+    /* true if user exists and credentials match */
+    let response = (user && user.password === user_pw) ? "true" : "false";
     res.status(200).json({ result: response });
 });
 
@@ -69,8 +62,7 @@ api.post("/login", async (req, res) => {
  * Response -> companyID, nickname, email, phoneNumber, profileURL
  * 유저의 정보를 나열한다 */
 api.post("/user/getUserInfo", async (req, res) => {
-    let user_id = req.body.companyID;
-    let user = await Users.findOne({ companyID: user_id });
+    let user = await Users.findOne({ companyID: req.body.companyID });
     if (!user) {
         res.status(404).json({ result: "false" });
     }  else {
@@ -92,7 +84,7 @@ api.post("/commute/getUserDateList", async (req, res) => {
         if (req.body.getWeek) {
             let req_date = new Date(req.body.date);
             /* Date of beginning of the week, sunday */
-            let start = new Date(req_date - req_date.getDay() * DAY_MS); // .toISOString();
+            let start = new Date(req_date - req_date.getDay() * DAY_MS);
             /* dates from monday to friday */
             let week_arr = [];
             for (let i = 0; i < 5; i++) {
@@ -209,9 +201,8 @@ api.post("/commute/setHoliday", async (req, res) => {
  * 해당 날짜의 명언 조회 */
 api.post("/etc/getQuotes", async (req, res) => {
     let today_quote = await Quotes.findOne({ date: req.body.date });
-    let ret_obj;
-    if (!today_quote) ret_obj = {};
-    else {
+    let ret_obj = {};
+    if (today_quote) {
         let { quote, person } = today_quote;
         ret_obj = { quote, person };
     }

@@ -1,0 +1,90 @@
+.hidden {
+    display: none;
+}
+
+table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+table tr:nth-child(even){background-color: #f2f2f2;}
+table tr:hover {background-color: #ddd;}
+
+th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f4721f;
+    color: white;
+}
+
+.widthContainer {
+  flex-grow: 1;
+  max-width: 1280px;
+}
+
+.brand {
+  color: #3b5998;
+  font-weight: 700;
+}
+
+#header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccd6dd;
+  background-color: white;
+}
+
+#header .widthContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#header h1 {
+  font-weight: 600;
+}
+
+#header input {
+  font-size: 1rem;
+  width: 200px;
+}
+
+#header #loginForm {
+  display: flex;
+  align-items: center;
+}
+
+#header #loginForm > *:not(last-of-type) {
+  margin-right: 1rem;
+}
+
+#welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#welcome.hidden {
+  display: none;
+}
+
+#welcome h1 {
+  font-size: 1.8em;
+  font-weight: 300;
+}
+
+#welcome .paper {
+  width: 50%;
+  text-align: center;
+}

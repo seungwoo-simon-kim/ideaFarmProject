@@ -71,6 +71,18 @@ api.post("/user/getUserInfo", async (req, res) => {
     }
 });
 
+api.post("/user/idToName", async (req, res) => {
+    var companyID_arr = [];
+    var name_arr = [];
+    // let users = await Users.find();
+    let idName_obj = {};
+    let idName_arr = await Users.find().map(comm => [ comm.companyID, comm.nickname ]).toArray();
+    for (let pair of idName_arr) {
+        idName_obj[pair[0]] = pair[1];
+    };
+    res.status(200).json( idName_obj );
+});
+
 /* Request -> companyID (optional: date, getWeek)
  * Response -> companyID, date, onworkTime, offworkTime, holiday_yn
  * 해당 날짜에 출퇴근 기록 조회 */

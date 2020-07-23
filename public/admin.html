@@ -14,12 +14,23 @@
       <header id="header">
         <div class="widthContainer">
           <h1 class="brand">관리자 페이지</h1>
-          <form id="loginForm">
-            <input name="companyID" placeholder="사번">
-            <input name="password" placeholder="비밀번호">
-            <button type="submit" id="login">로그인</button>
-            <button type="submit" id="test">테스트</button>
-          </form>
+          <div id="loginContainer">
+              <form id="loginForm">
+                    <input name="companyID" placeholder="사번">
+                    <input name="password" placeholder="비밀번호">
+                    <button type="submit" id="login">로그인</button>
+                    <button type="submit" id="test">테스트</button>
+              </form>
+          </div>
+          <div id="searchContainer" class="hidden">
+              <form id="searchForm">
+                <input name="companyID" placeholder="사번">
+                <input name="year" placeholder="2020">
+                <input name="month" placeholder="11">
+                <input name="day" placeholder="12">
+                <button type="submit" id="login">검색</button>
+              </form>
+          </div>
         </div>
       </header>
 
@@ -31,7 +42,7 @@
       </main>
 
       <table id="myTable" class="hidden">
-          <tr id="byName">
+          <tr id="tableHeaders">
               <th>날짜</th>
               <th>사번</th>
               <th>이름</th>
@@ -40,14 +51,8 @@
               <th>퇴근 시간</th>
               <th>근무 시간</th>
           </tr>
-          <tr id="byDate" class="hidden">
-              <th>사번</th>
-              <th>이름</th>
-              <th>출근 시간</th>
-              <th>퇴근 시간</th>
-              <th>근무 시간</th>
-          </tr>
-          <tr id="byNameRow">
+
+          <tr id="tableContents">
               <td>2020-11-12</td>
               <td>0000001</td>
               <td>김승우</td>
@@ -56,13 +61,7 @@
               <td>18-30</td>
               <td>8시간</td>
           </tr>
-          <tr id="byDateRow" class="hidden">
-              <td>0000001</td>
-              <td>김승우</td>
-              <td>8-30</td>
-              <td>18-30</td>
-              <td>8시간</td>
-          </tr>
+
       </table>
   </body>
 </html>

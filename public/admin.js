@@ -8,28 +8,21 @@ class App {
 
     setup() {
         this._loginForm = document.querySelector("#loginForm");
+        this._loginForm.login.addEventListener("click", this._onLogin);
+
+        this._loginContainer = document.querySelector("#loginContainer");
+        this._searchContainer = document.querySelector("#searchContainer");
+
         this._welcome = document.querySelector("#welcome");
         this._table = document.querySelector("#myTable");
-        this._tableContents = this._table.children[0];
-        this._loginForm.login.addEventListener("click", this._onLogin);
-        // this._loginForm.test.addEventListener("click", this._switchHeaders);
-    }
 
-    // _switchHeaders(event) {
-    //     event.preventDefault();
-    //     let headers = this._tableContents.children;
-    //     for (let i = 0; i < headers.length; i++) {
-    //         if (headers[i].classList.contains("hidden")) {
-    //             headers[i].classList.remove("hidden");
-    //         }  else {
-    //             headers[i].classList.add("hidden");
-    //         }
-    //     }
-    // }
+    }
 
     _loadTable() {
         this._welcome.classList.add("hidden");
+        this._loginContainer.classList.add("hidden");
         this._table.classList.remove("hidden");
+        this._searchContainer.classList.remove("hidden");
     }
 
     async _onLogin(event) {

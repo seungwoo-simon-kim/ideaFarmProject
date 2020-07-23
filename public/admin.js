@@ -9,7 +9,6 @@ class App {
         this._refreshTable = this._refreshTable.bind(this);
 
         [ this._companyID, this._year, this._month, this._day ];
-        // this._switchHeaders = this._switchHeaders.bind(this);
     }
 
     setup() {
@@ -44,9 +43,7 @@ class App {
 
     _refreshTable() {
         let toDel = this._table.querySelectorAll(".toDel");
-        if (!toDel) {
-            return;
-        }
+        if (!toDel) return;
         toDel.forEach(elem => elem.remove());
     }
 

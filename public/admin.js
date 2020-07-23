@@ -91,7 +91,6 @@ class App {
         let json = await res.json();
         this._loadTable(json.result);
     }
-
 }
 
 let app = new App();

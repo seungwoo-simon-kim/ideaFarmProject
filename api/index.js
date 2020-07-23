@@ -76,7 +76,10 @@ api.post("/user/getUserInfo", async (req, res) => {
  * 해당 날짜에 출퇴근 기록 조회 */
 api.post("/commute/getUserDateList", async (req, res) => {
     /* if only companyID is provided, then list all commute times of user */
-    let query = { companyID: req.body.companyID };
+    let query = {};
+    if (req.body.companyID) {
+        query.companyID = req.body.companyID;
+    }
     /* if only date is provided, then list commute time of that date */
     if (req.body.date) {
         query.date = req.body.date;
@@ -101,7 +104,7 @@ api.post("/commute/getUserDateList", async (req, res) => {
         let b_date = b.date.split('-');
         for (let i = 0; i < 3; i++) {
             if (a_date[i] !== b_date[i]) return a_date[i] - b_date[i];
-        }  return 0;
+        }  return a.companyID - b.companyID;
     });
     let res_obj = { result: list };
     /* only get remaining time when getWeek is true */

@@ -28,7 +28,7 @@
                 <input name="year" placeholder="2020">
                 <input name="month" placeholder="11">
                 <input name="day" placeholder="12">
-                <button type="submit" id="login">검색</button>
+                <button type="submit" id="search">검색</button>
               </form>
           </div>
         </div>
@@ -52,14 +52,14 @@
               <th>근무 시간</th>
           </tr>
 
-          <tr id="tableContents">
-              <td>2020-11-12</td>
-              <td>0000001</td>
-              <td>김승우</td>
-              <td>Y</td>
-              <td>8-30</td>
-              <td>18-30</td>
-              <td>8시간</td>
+          <tr id="tableContents" class="hidden template">
+              <td id="date_col">2020-11-12</td>
+              <td id="id_col">0000001</td>
+              <td id="name_col">김승우</td>
+              <td id="holiday_col">Y</td>
+              <td id="onWork_col">8-30</td>
+              <td id="offWork_col">18-30</td>
+              <td id="total_col">8시간</td>
           </tr>
 
       </table>

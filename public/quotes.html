@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Quotes Page</title>
+
+    <!-- These two lines provide automatic page and style reloading when files change -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/lib/client/updater.js" defer></script>
+    <link rel="stylesheet" href="quotes.css">
+    <script type="module" src="quotes.js"></script>
+  </head>
+  <body>
+      <header id="header">
+        <div class="widthContainer">
+          <h1 class="brand">명언 관리자 페이지</h1>
+          <div id="loginContainer">
+              <form id="loginForm">
+                    <input name="companyID" placeholder="사번">
+                    <input name="password" placeholder="비밀번호">
+                    <button type="submit" id="login">로그인</button>
+              </form>
+          </div>
+          <div id="idDiv" class="hidden">
+              <h2></h2>
+          </div>
+        </div>
+      </header>
+
+      <main id="welcome">
+        <div class="paper">
+          <h1>명언 관리자 페이지에 오신 것을 환영합니다</h1>
+          <h2>로그인 후 이용해주시기 바랍니다.</h2>
+        </div>
+      </main>
+
+      <form id="insertForm" class="hidden">
+          <input type="date" name="date" placeholder="2000-11-12">
+          <textarea id="writeQuote" form="dateForm"></textarea>
+          <input type="text" name="author" placeholder="이순신">
+          <button type="submit" id="insert">명언 등록</button>
+      </form>
+
+  </body>
+</html>

@@ -55,7 +55,6 @@ class App {
 
     /* load table when search button is clicked */
     _loadTable(res_array) {
-        console.log(this._idToNameObj);
         this._table.classList.remove("hidden");
         this._table.querySelector("#tableHeaders").classList.remove("hidden");
         let col_ids = [ "date_col", "id_col", "name_col", "holiday_col", "onWork_col", "offWork_col", "total_col" ];

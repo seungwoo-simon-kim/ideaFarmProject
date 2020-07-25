@@ -75,12 +75,14 @@ api.post("/user/idToName", async (req, res) => {
     var companyID_arr = [];
     var name_arr = [];
     // let users = await Users.find();
-    let idName_obj = {};
+    let idToName_obj = {};
+    let nameToId_obj = {};
     let idName_arr = await Users.find().map(comm => [ comm.companyID, comm.nickname ]).toArray();
     for (let pair of idName_arr) {
-        idName_obj[pair[0]] = pair[1];
+        idToName_obj[pair[0]] = pair[1];
+        nameToId_obj[pair[1]] = pair[0];
     };
-    res.status(200).json( idName_obj );
+    res.status(200).json( { idToName: idToName_obj, nameToId: nameToId_obj } );
 });
 
 /* Request -> companyID (optional: date, getWeek)

@@ -8,7 +8,8 @@ class App {
         this._loadTable = this._loadTable.bind(this);
         this._refreshTable = this._refreshTable.bind(this);
         this._getNames = this._getNames.bind(this);
-        this._idNameObj;
+        this._idToNameObj;
+        this._nameToIdObj;
 
         [ this._companyID, this._year, this._month, this._day ];
     }
@@ -54,13 +55,19 @@ class App {
 
     /* load table when search button is clicked */
     _loadTable(res_array) {
-        console.log(this._idNameObj);
+        console.log(this._idToNameObj);
         this._table.classList.remove("hidden");
         this._table.querySelector("#tableHeaders").classList.remove("hidden");
         let col_ids = [ "date_col", "id_col", "name_col", "holiday_col", "onWork_col", "offWork_col", "total_col" ];
         for (let obj of res_array) {
             const obj_keys = {
-                date_col: obj.date, id_col: obj.companyID, name_col: this._idNameObj[obj.companyID], holiday_col: obj.holiday_yn, onWork_col: obj.onworkTime, offWork_col: obj.offworkTime, total_col: obj.total
+                date_col: obj.date,
+                id_col: obj.companyID,
+                name_col: this._idToNameObj[obj.companyID],
+                holiday_col: obj.holiday_yn,
+                onWork_col: obj.onworkTime,
+                offWork_col: obj.offworkTime,
+                total_col: obj.total
             }
             let new_row = this._table.querySelector("#tableContents").cloneNode(true);
             for (let col of col_ids) {
@@ -76,7 +83,7 @@ class App {
     async _onLogin(event) {
         event.preventDefault();
         this._getNames();
-        let form = this._loginForm
+        let form = this._loginForm;
         let body = {
             companyID: form.companyID.value,
             password: form.password.value
@@ -96,16 +103,19 @@ class App {
         this._refreshTable();
         let form = this._searchForm;
         [ this._companyID, this._year, this._month, this._day ] = [ form.companyID.value.trim(), form.year.value.trim(), form.month.value.trim(), form.day.value.trim() ];
+        this._companyID = this._companyID in this._nameToIdObj ? this._nameToIdObj[this._companyID] : this._companyID;
         let query = this._setQuery();
         let res = await apiRequest("POST", "/commute/getUserDateList", query);
         let json = await res.json();
         this._loadTable(json.result);
     }
 
-    /* create obj { companyID : nickname } */
+    /* create idToNameObj { companyID: nickname } and nameToIdObj { nickname: companyID } */
     async _getNames() {
         let res = await apiRequest("POST", "/user/idToName");
-        this._idNameObj = await res.json();
+        let json = await res.json();
+        this._idToNameObj = json.idToName;
+        this._nameToIdObj = json.nameToId;
     }
 
 }

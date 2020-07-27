@@ -99,6 +99,6 @@ th {
     display: none;
 }
 
-#insertForm #writeQuote {
-    width: 80%;
+#insertForm textarea {
+    flex-grow: 0.8;
 }

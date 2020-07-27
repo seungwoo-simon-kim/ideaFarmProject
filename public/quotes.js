@@ -45,11 +45,17 @@ class App {
         }
     }
 
-    _onInsert(event) {
+    async _onInsert(event) {
         event.preventDefault();
         let form = this._insertForm;
-        console.log(form.date.value);
-        alert(`${form.date.value}에 명언이 등록되었습니다`);
+        let date_arr = [];
+        for (let elem of form.date.value.split('-')) {
+            if (elem[0] === "0") elem = elem[1];
+            date_arr.push(elem);
+        }
+        let date_str = date_arr.join('-');
+        let res = await apiRequest("POST", "/etc/writeQuotes", { date: date_str, quote: form.quote.value, person: form.author.value });
+        let json = await res.json();
     }
 }
 

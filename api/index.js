@@ -226,6 +226,20 @@ api.post("/etc/getQuotes", async (req, res) => {
     res.status(200).json( ret_obj );
 });
 
+api.post("/etc/writeQuotes", async (req, res) => {
+    await Quotes.findOneAndUpdate(
+        { date: req.body.date },
+        {
+            $set: {
+                quote: req.body.quote,
+                person: req.body.person
+            }
+        },
+        { upsert: true }
+    );
+    res.status(200).json({ result: "true" });
+});
+
 /* Request -> companyID, contents
  * Response -> true if insert successful, false otherwise
  * 유저 건의 사항 제출용 */

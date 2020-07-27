@@ -38,7 +38,7 @@ class App {
 
     /* (companyID ? ) && (year || year-month || year-month-day) */
     _setQuery() {
-        const date = `${this._year + `-`}${this._year && this._month ? this._month + `-` : ''}${this._year && this._month && this._day ? this._day : ''}`;
+        const date = `${this._year + `-`}${this._year && this._month ? this._month + `-` : ''}${this._year && this._month && this._day ? this._day + `$` : ''}`;
         let query = {
             ...(this._companyID && { companyID: this._companyID }),
             ...(date && { date: { $regex: `${date}` } })

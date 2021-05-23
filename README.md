@@ -8,7 +8,7 @@ Modern problems require modern solutions - this is the motivating principle behi
 
 ## The Problem
 
-Currently, Idea Farm uses the good old pen and paer to record when employees arrive at work and leave. This is then manually recorded into an excel file, which is in turn used to calculate whether the employee has fulfilled her minimum weekly work time of 40 hours. Needless to say, this is tedious and prone to error. People often forget to record when they come into work or when they get off, which leads to disastrous consequences, such as, God forbid, having to work overtime on a Friday. Having worked until 7 p.m. one fine Friday evening in such a manner, I decided that something must be done about this system. 
+Currently, Idea Farm uses the good old pen and paper to record when employees arrive at work and leave. This is then manually recorded into an excel file, which is in turn used to calculate whether the employee has fulfilled her minimum weekly work time of 40 hours. Needless to say, this is tedious and prone to error. People often forget to record when they come into work or when they get off, which leads to disastrous consequences, such as, God forbid, having to work overtime on a Friday. Having worked until 7 p.m. one fine Friday evening in such a manner, I decided that something must be done about this system. 
 
 ## The Project
 

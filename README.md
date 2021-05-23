@@ -12,7 +12,7 @@ Currently, Idea Farm uses the good old pen and paper to record when employees ar
 
 ## The Project
 
-I collaborated with an employee who had experience developing Android applications to come up with a suitable solution. We devised an app that will track when employees come in or get off work. It offers other features such as notifying the user of when she can leave work on Friday, based on our calculations, an admin page that visualizes the MongoDB database, and a moderator page in which we can input quotes of the day to be shown to users. My co-worker did most of the front end, while I was responsible for the back end, the result of which being in `./api/index.js`
+I collaborated with an employee who had experience developing Android applications to come up with a suitable solution. We devised an app that will track when employees come in or get off work. It offers other features such as notifying the user of when she can leave work on Friday based on our calculations, an admin page that allows visualizing / modifying the database when necessary, and a page in which we can input quotes of the day to be shown to users. My co-worker did most of the front end, while I was responsible for the back end, the result of which is in `./api/index.js`
 
 The `public` folder contains a quick REST API Tester that I created for, well, testing purposes. I did not update this after making significant changes to the api
 upon receiving the required endpoints from my co-worker. Regardless, I realized Postman basically does just the testing that I needed.

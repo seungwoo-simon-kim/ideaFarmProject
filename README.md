@@ -4,7 +4,7 @@
 
 Idea Farm is a department within [Hanwha Life Insurance](https://www.hanwhalife.com/static/company/english/EN_0000000_P10000.htm), South Korea's oldest and second largest life insurance company. Its primary objective is to develop new business ideas for the company appropos to the rapid changes that characterize our current society.
 
-Modern problems require modern solutions - this is the motivating principle behind Idea Farm's methodology which sets it apart from any other department in the company. Distancing itself from the traditional image of Korean businesses -- hierarchial and old-fashioned -- Idea Farm prides itself in being free, open, and thereby innovative. For example, here are a feww of many practices unique to the Idea Farm department: casual work attire, a free-seating policy, and (somewhat) flexible working hours. 
+Modern problems require modern solutions - this is the motivating principle behind Idea Farm's methodology which sets it apart from any other department in the company. Distancing itself from the traditional image of Korean businesses -- hierarchial and old-fashioned -- Idea Farm prides itself in being free, open, and thereby innovative. For example, here are a few of many practices unique to the Idea Farm department: casual work attire, a free-seating policy, and (somewhat) flexible working hours. 
 
 ## The Problem
 
